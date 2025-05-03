@@ -21,7 +21,7 @@ uploaded_file = st.file_uploader("Choose a PDF file", type=["pdf"])
 
 def extract_table_from_pdf(file, api_key, max_retries=3, min_rows_expected=10):
     try:
-        client = genai.Client(api_key=AIzaSyBnTpfIzhT8wGku1feH-Nv5yGVOL3jHGv0)
+        client = genai.Client(api_key="AIzaSyBnTpfIzhT8wGku1feH-Nv5yGVOL3jHGv0")
         temp_file_path = "temp.pdf"
         with open(temp_file_path, "wb") as f:
             f.write(file.read())
