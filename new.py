@@ -13,15 +13,13 @@ st.set_page_config(page_title="PDF Table Extractor", layout="wide")
 st.title("PDF Table Extractor")
 st.markdown("Upload a PDF file to extract table data and download it as an Excel file.")
 
-# API Key input
-# api_key = st.text_input("Enter your Gemini API Key", type="password")
-
 # File uploader for PDF
 uploaded_file = st.file_uploader("Choose a PDF file", type=["pdf"])
 
-def extract_table_from_pdf(file, api_key, max_retries=3, min_rows_expected=10):
+def extract_table_from_pdf(file, max_retries=3, min_rows_expected=10):
     try:
-        client = genai.Client(api_key="AIzaSyBnTpfIzhT8wGku1feH-Nv5yGVOL3jHGv0")
+        # Use the provided API key
+        client = genai.Client(api_key="AIzaSyBJ4W6TkzheO_5uWol_jkX6bFfFC5n6vCQ")
         temp_file_path = "temp.pdf"
         with open(temp_file_path, "wb") as f:
             f.write(file.read())
@@ -53,6 +51,8 @@ def extract_table_from_pdf(file, api_key, max_retries=3, min_rows_expected=10):
         st.error("Failed to extract sufficient table data after maximum retries.")
         return None
     except Exception as e:
+        if os.path.exists(temp_file_path):
+            os.remove(temp_file_path)
         st.error(f"Error processing PDF: {str(e)}")
         return None
 
@@ -84,9 +84,9 @@ def get_excel_download_link(df):
     href = f'<a href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64}" download="extracted_table.xlsx">Download Excel File</a>'
     return href
 
-if uploaded_file is not None and api_key:
+if uploaded_file is not None:
     with st.spinner("Extracting table from PDF..."):
-        table_text = extract_table_from_pdf(uploaded_file, api_key, max_retries=3, min_rows_expected=10)
+        table_text = extract_table_from_pdf(uploaded_file, max_retries=3, min_rows_expected=10)
         
         if table_text:
             df = parse_table_text(table_text)
@@ -100,4 +100,4 @@ if uploaded_file is not None and api_key:
         else:
             st.warning("No table data extracted from the PDF.")
 else:
-    st.info("Please provide both a valid API key and a PDF file to proceed.")
+    st.info("Please upload a PDF file to proceed.")
